@@ -13,7 +13,7 @@ import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guards';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { join } from 'path';
-import { UserIsUserGuard } from 'src/auth/guards/UserIsUser.guard';
+import { UserIsUserGuard } from 'src/auth/guards/user-is-user.guard';
 
 export const storage = {
     storage: diskStorage({
@@ -43,10 +43,10 @@ export class UserController {
 
     @Post('login')
    
-    login(@Body() user:User):Observable<Object>{
+    login(@Body() user:User):Observable<object>{
         return this.userService.login(user).pipe(
             map((jwt:string)=>{
-                return {access_token: jwt};
+                return { access_token: jwt};
             })
         )
     }
@@ -57,8 +57,8 @@ export class UserController {
         return this.userService.findOne(param.id);
     }
 
-    // @hasRoles(UserRole.ADMIN)
-    // @UseGuards(JwtAuthGuard,RolesGuard)
+    @hasRoles(UserRole.ADMIN)
+    @UseGuards(JwtAuthGuard,RolesGuard)
     @Get()
     index( 
         @Query('page') page = 1, 
@@ -99,7 +99,7 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
-    uploadFile(@UploadedFile()file ,@Request() req): Observable<object>{
+    uploadFile(@UploadedFile()file ,@Request() req): Observable<Object>{
 
         const user: User=req.user;
         return this.userService.updateOne(user.id,{profileImage:file.filename}).pipe(

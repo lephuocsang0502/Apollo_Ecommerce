@@ -6,6 +6,7 @@ import { RolesGuard } from './guards/roles.guard';
 import { JwtAuthGuard } from './guards/jwt-guards';
 import { JwtStrategy } from './guards/jwt-strategy';
 import { UserModule } from 'src/user/user.module';
+import { expiresInSecond } from 'src/constant.enum';
 
 @Module({
     imports: [
@@ -15,7 +16,7 @@ import { UserModule } from 'src/user/user.module';
             inject: [ConfigService],
             useFactory: async (configService: ConfigService) => ({
                 secret: configService.get('JWT_SECRET'),
-                signOptions: {expiresIn: '10000s'}
+                signOptions: {expiresIn: expiresInSecond}
             })
         })
     ],

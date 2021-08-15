@@ -9,10 +9,11 @@ import { Observable, of } from 'rxjs';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Image } from 'src/common/Image.interface';
+import { PRODUCT_ENTRIES_URL } from 'src/constant.enum';
 
 
 
-export const PRODUCT_ENTRIES_URL ='http://localhost:2000/api/category';
+
 
 export const storage = {
     storage: diskStorage({
@@ -35,8 +36,8 @@ export class ProductController {
     @UseGuards(JwtAuthGuard)
     @Get('')
     index(
-        @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10
+        @Query('page') page = 1,
+        @Query('limit') limit = 10
     ) {
         limit = limit > 100 ? 100 : limit;
         

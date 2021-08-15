@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards,Request, Get, Put, Delete, Param, UseInterceptors, UploadedFile, Query, Res } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Request, Get, Put, Delete, Param, UseInterceptors, UploadedFile, Res, Query } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
@@ -9,35 +9,36 @@ import { CategoryService } from '../service/category.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Image } from 'src/common/Image.interface';
+import { CATEGORY_ENTRIES_URL } from 'src/constant.enum';
 
-export const CATEGORY_ENTRIES_URL ='http://localhost:2000/api/category';
+
 
 export const storage = {
     storage: diskStorage({
-        destination: './uploads/category-image', 
-        filename: (req, file, cb) => {     
-          const fileName :string = path.parse(file.originalname).name.replace(/\s/g,'')+ uuidv4();
-          const extension:string = path.parse(file.originalname).ext;
-          cb(null, `${fileName}${extension}`)
-          }
-      })         
+        destination: './uploads/category-image',
+        filename: (req, file, cb) => {
+            const fileName: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${fileName}${extension}`)
+        }
+    })
 
 }
 
 @Controller('category')
 export class CategoryController {
 
-    constructor(private categoryService:CategoryService) {}
+    constructor(private categoryService: CategoryService) { }
 
 
     @UseGuards(JwtAuthGuard)
     @Get('')
     index(
-        @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10
+        @Query('page') page = 1,
+        @Query('limit') limit = 10
     ) {
         limit = limit > 100 ? 100 : limit;
-        
+
 
         return this.categoryService.paginateAll({
             limit: Number(limit),
@@ -48,10 +49,10 @@ export class CategoryController {
 
     @UseGuards(JwtAuthGuard)
     @Post('')
-    create(@Body() categoryEntry: Category, @Request() req):Observable<Category>  {
+    create(@Body() categoryEntry: Category, @Request() req): Observable<Category> {
         console.log(categoryEntry);
         const user = req.user;
-        return this.categoryService.create(user,categoryEntry);
+        return this.categoryService.create(user, categoryEntry);
     }
 
     @Get(':id')
@@ -74,13 +75,14 @@ export class CategoryController {
     @UseGuards(JwtAuthGuard)
     @Post('image/upload')
     @UseInterceptors(FileInterceptor('file', storage))
-    uploadFile(@UploadedFile()file ,@Request() req): Observable<Image>{
+    uploadFile(@UploadedFile() file, @Request() req): Observable<Image> {
         return of(file);
-     
+
     }
 
     @Get('image/:imagename')
-    findImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
+
+    findImage(@Param('imagename') imagename, @Res() res): Observable<object> {
         return of(res.sendFile(join(process.cwd(), 'uploads/category-image/' + imagename)));
     }
 }
