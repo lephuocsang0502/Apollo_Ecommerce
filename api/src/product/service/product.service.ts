@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { from, Observable, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import {  map, switchMap } from 'rxjs/operators';
 import slugify from 'slugify';
-import { Category } from 'src/category/model/category.interface';
+import { Image } from 'src/common/Image.interface';
+
 import { User } from 'src/user/models/user.interface';
 import { UserService } from 'src/user/service/user.service';
 import { Repository } from 'typeorm';

@@ -1,7 +1,7 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { from, Observable, of, throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { AuthService } from 'src/auth/service/auth.service';
 import { Like, Repository } from 'typeorm';
@@ -120,7 +120,7 @@ export class UserService {
                 }
             }),
             catchError(()=>{
-                throw new NotFoundException("Email or password not match");
+                throw new HttpException('Email or Password not match', HttpStatus.BAD_REQUEST);
             })
         )
     }

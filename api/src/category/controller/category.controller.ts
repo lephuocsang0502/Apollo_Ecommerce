@@ -31,7 +31,7 @@ export class CategoryController {
     constructor(private categoryService: CategoryService) { }
 
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get('')
     index(
         @Query('page') page = 1,

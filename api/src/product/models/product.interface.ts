@@ -1,4 +1,5 @@
 import { Category } from "src/category/model/category.interface";
+import { Image } from "src/common/Image.interface";
 import { User } from "src/user/models/user.interface";
 
 export interface Product {
@@ -8,7 +9,7 @@ export interface Product {
     price: number;
     quantity: number;
     description: string;
-    productPictures: string[];
+    productPictures: Array<{img:string}>;
     createdAt: Date;
     updatedAt: Date;
     likes: number;

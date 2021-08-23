@@ -2,6 +2,7 @@ import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 
 
 import { UserEntity } from "src/user/models/user.entity";
 import { CategoryEntity } from "src/category/model/category.entity";
+import { Image } from "src/common/Image.interface";
 
 @Entity('product_entity')
 export class ProductEntity{
@@ -24,8 +25,13 @@ export class ProductEntity{
     @Column({default: ''})
     description:string;
 
-    @Column('text', { array: true })
-    productPictures:string[];
+    @Column({
+        type: 'jsonb',
+        array: false,
+        default: () => "'[]'",
+        nullable: false,
+    })
+    productPictures: Array<{img:string}>;
 
     @Column({type:'timestamp',default: ()=>"CURRENT_TIMESTAMP"})
     createdAt:Date;
