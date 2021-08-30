@@ -9,8 +9,6 @@ export class UserEntity{
     id:number;
 
     @Column()
-
-    @Column()
     name:string;
 
     //unique là duy nhất, không trùng nhau

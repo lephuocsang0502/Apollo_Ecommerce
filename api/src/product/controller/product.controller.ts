@@ -66,7 +66,7 @@ export class ProductController {
     @UseInterceptors(FilesInterceptor('file',20, storage))
     create(@Body() productEntry: Product, @UploadedFiles() files: Image[], @Request() req): Observable<Product> {
         const user = req.user;
-        let productPictures = [];
+        const productPictures = [];
         console.log(files);
         if (files !=null ) {
             files.forEach(file => {
@@ -117,7 +117,5 @@ export class ProductController {
     }
 
 }
-function multer(arg0: { storage: { storage: any; }; }) {
-    throw new Error('Function not implemented.');
-}
+
 
