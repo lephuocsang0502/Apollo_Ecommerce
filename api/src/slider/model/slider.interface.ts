@@ -11,6 +11,7 @@ export interface Slider {
 
     img?: string;
 
+    color?: string;
 
     path?: string;
 

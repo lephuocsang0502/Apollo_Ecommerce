@@ -16,6 +16,9 @@ export class SliderEntity{
     @Column()
     img: string;
 
+    @Column({nullable:true})
+    color: string;
+
     @Column()
     path: string;
 

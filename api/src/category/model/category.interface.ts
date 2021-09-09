@@ -4,11 +4,12 @@ export interface Category{
     id?: number
     name?: string;
     slug?: string;
-    parentId?:string;
     type?: string;
     categoryImage?: string;
     createdAt?: Date;
     updatedAt?: Date;
-    createdBy?: User
+    createdBy?: User;
+    parent:Category;
+    children:Category[];
 }
 

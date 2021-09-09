@@ -1,10 +1,15 @@
 import { ProductEntity } from "src/product/models/product.entity";
 import { UserEntity } from "src/user/models/user.entity"
-import { BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 
 
 
 @Entity('category_entity')
+@Tree("closure-table", {
+    closureTableName: "category_closure",
+    ancestorColumnName: (column) => "ancestor_" + column.propertyName,
+    descendantColumnName: (column) => "descendant_" + column.propertyName,
+})
 export class CategoryEntity {
 
     @PrimaryGeneratedColumn()
@@ -15,12 +20,6 @@ export class CategoryEntity {
 
     @Column()
     slug: string;
-
-    @Column({ nullable: true })
-    parentId:string;
-
-    @Column({ nullable: true })
-    type: string;
 
     @Column({ nullable: true })
     categoryImage: string;
@@ -42,6 +41,10 @@ export class CategoryEntity {
     @OneToMany(type=>ProductEntity, productEntries=>productEntries.category)
     productEntries: ProductEntity[];
 
+    @TreeChildren()
+    children: CategoryEntity[];
 
+    @TreeParent()
+    parent: CategoryEntity;
 
 }

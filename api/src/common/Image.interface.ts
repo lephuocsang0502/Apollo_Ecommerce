@@ -6,5 +6,6 @@ export interface Image {
     destination: string;
     filename: string;
     path: string;
+    buffer:Buffer;
     size: number;
 }

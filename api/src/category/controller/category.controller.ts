@@ -10,6 +10,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Image } from 'src/common/Image.interface';
 import { CATEGORY_ENTRIES_URL } from 'src/constant.enum';
+import { map } from 'rxjs/operators';
+import { CloudinaryService } from 'src/cloudinary/services/clodinary.service';
 
 
 
@@ -28,10 +30,13 @@ export const storage = {
 @Controller('category')
 export class CategoryController {
 
-    constructor(private categoryService: CategoryService) { }
+    constructor(
+        private categoryService: CategoryService,
+        private cloudyService:CloudinaryService
+        ) { }
 
 
-    // @UseGuards(JwtAuthGuard)
+    //@UseGuards(JwtAuthGuard)
     @Get('')
     index(
         @Query('page') page = 1,
@@ -49,15 +54,28 @@ export class CategoryController {
 
     @UseGuards(JwtAuthGuard)
     @Post('')
-    create(@Body() categoryEntry: Category, @Request() req): Observable<Category> {
-        console.log(categoryEntry);
+    @UseInterceptors(FileInterceptor('file'))
+    async create(@Body() categoryEntry: Category, @Request() req,@UploadedFile() file:Image): Promise<Observable<Category>> {
+        
+        if(file){
+            
+            const img = await this.cloudyService.uploadImageToCloudinary(file);
+            categoryEntry.categoryImage=img.url;
+        }
+       
         const user = req.user;
-        return this.categoryService.create(user, categoryEntry);
+        const obj = JSON.parse(JSON.stringify(categoryEntry));
+        return this.categoryService.create(user, obj);
     }
 
     @Get(':id')
     findOne(@Param('id') id: number): Observable<Category> {
         return this.categoryService.findOne(id);
+    }
+
+    @Post('tree-category')
+    treeCate(){
+        return this.categoryService.getTreeCate();
     }
 
     @UseGuards(JwtAuthGuard)
@@ -81,7 +99,6 @@ export class CategoryController {
     }
 
     @Get('image/:imagename')
-
     findImage(@Param('imagename') imagename, @Res() res): Observable<object> {
         return of(res.sendFile(join(process.cwd(), 'uploads/category-image/' + imagename)));
     }

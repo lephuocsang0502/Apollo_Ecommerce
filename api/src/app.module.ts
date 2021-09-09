@@ -10,6 +10,8 @@ import { join } from 'path';
 import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { SliderModule } from './slider/slider.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+
 
 
 @Module({
@@ -29,6 +31,7 @@ import { SliderModule } from './slider/slider.module';
     ProductModule,
     CategoryModule,
     SliderModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

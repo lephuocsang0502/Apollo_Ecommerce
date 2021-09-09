@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query, UseGuards, Request, Post, Param, Put, Delete, UploadedFile, Res, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Body, Controller, Get, Query, UseGuards, Request, Post, Param, Put, Delete, UploadedFile, Res, UseInterceptors, UploadedFiles, BadRequestException } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guards';
 import { ProductService } from '../service/product.service';
@@ -10,6 +10,7 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Image } from 'src/common/Image.interface';
 import { PRODUCT_ENTRIES_URL } from 'src/constant.enum';
+import { CloudinaryService } from 'src/cloudinary/services/clodinary.service';
 
 
 export const storage = {
@@ -23,10 +24,15 @@ export const storage = {
     })
 
 }
+
+
+
 @Controller('product')
 export class ProductController {
 
-    constructor(private productService: ProductService) { }
+    constructor(
+        private productService: ProductService,
+        ) { }
 
 
     // @UseGuards(JwtAuthGuard)
@@ -60,25 +66,15 @@ export class ProductController {
         }, Number(cateogryId))
     }
 
-
+    
     @UseGuards(JwtAuthGuard)
     @Post('')
-    @UseInterceptors(FilesInterceptor('file',20, storage))
-    create(@Body() productEntry: Product, @UploadedFiles() files: Image[], @Request() req): Observable<Product> {
+    @UseInterceptors(FilesInterceptor('file',20))
+    create(@Body() productEntry: Product, @UploadedFiles() files: Image[], @Request() req):Promise<Observable<Product>> {
+
         const user = req.user;
-        const productPictures = [];
-        console.log(files);
-        if (files !=null ) {
-            files.forEach(file => {
-                const fileReponse = {
-                  img: file.filename,
-                };
-                productPictures.push(fileReponse);
-              });
-        }
-        productEntry.productPictures = productPictures;
         const obj = JSON.parse(JSON.stringify(productEntry));
-        return this.productService.create(user, obj);
+        return this.productService.create(user, obj,files);
 
     }
 
@@ -103,13 +99,12 @@ export class ProductController {
         return this.productService.deleteOne(id);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('image/upload')
-    @UseInterceptors(FileInterceptor('file', storage))
-    uploadFile(@UploadedFile() file, @Request() req): Observable<Image> {
-        return of(file);
+    // @UseGuards(JwtAuthGuard)
+    // @Post('image/upload')
+    // @UseInterceptors(FileInterceptor('file', storage))
+    // uploadFile(@UploadedFile() file, @Request() req): Observable<Image> {
+    //     return of(file);
 
-    }
 
     @Get('image/:imagename')
     findImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
